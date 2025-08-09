@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Агрохимия — магазин</title>
+  <meta name="description" content="Интернет-магазин сельскохозяйственной химии — удобный каталог, документы безопасности и заявка на покупку." />
+  <style>
+    :root{
+      --accent:#2b8a3e;
+      --muted:#666;
+      --card-bg:#fff;
+      --bg:#f4f6f8;
+      --maxw:1100px;
+      --radius:10px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:#111;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    .wrap{max-width:var(--maxw);margin:28px auto;padding:0 18px;}
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;margin-bottom:18px;
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#2b8a3e,#58b46b);
+      display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:12px;align-items:center}
+    .search{
+      display:flex;align-items:center;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);
+    }
+    .search input{border:0;outline:0;font-size:14px}
+    .filter, .cart-btn{background:#fff;padding:8px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+    main{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .catalog{background:transparent}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);display:flex;flex-direction:column;gap:10px}
+    .img{height:140px;border-radius:8px;background-size:cover;background-position:center}
+    .title{font-weight:600;font-size:15px}
+    .meta{color:var(--muted);font-size:13px}
+    .price{font-weight:700;color:var(--accent)}
+    .btn-row{display:flex;gap:8px;margin-top:auto}
+    button.btn{flex:1;padding:8px 10px;border-radius:8px;border:0;cursor:pointer}
+    .btn.buy{background:var(--accent);color:#fff}
+    .btn.info{background:#eef8f0;color:var(--accent);border:1px solid rgba(43,138,62,0.12)}
+    aside.sidebar{position:sticky;top:18px;background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+    .cart-list{max-height:300px;overflow:auto;margin-bottom:12px}
+    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed #eee}
+    .small{font-size:13px;color:var(--muted)}
+    .total{display:flex;justify-content:space-between;font-weight:700;margin-top:8px}
+    footer{margin-top:24px;padding:12px 0;color:var(--muted);font-size:13px;text-align:center}
+    .badge{background:#fff;padding:6px 8px;border-radius:999px;font-weight:600;border:1px solid rgba(0,0,0,0.06)}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}
+    .modal{width:100%;max-width:720px;background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.3);max-height:90vh;overflow:auto}
+    .close{background:#f3f4f6;border-radius:8px;border:0;padding:6px 8px;cursor:pointer}
+    form.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type="text"], input[type="email"], input[type="number"], textarea, select{
+      width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;font-size:14px;
+    }
+    .note{background:#fff;border-left:4px solid #f59e0b;padding:10px;border-radius:6px;margin:8px 0;color:#111}
+    @media (max-width:880px){
+      main{grid-template-columns:1fr}
+      aside.sidebar{position:static;order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="document">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">AH</div>
+        <div>
+          <h1>Агрохимия — магазин</h1>
+          <div class="small">Пестициды • Удобрения • Средства защиты растений</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search" role="search" aria-label="Поиск товаров">
+          <svg width="16" height="16" viewBox="0 0 24 24" style="opacity:.6;margin-right:8px"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6z"></path></svg>
+          <input id="q" placeholder="Поиск по названию, действующему веществу..." />
+        </div>
+        <button id="openFilters" class="filter" aria-expanded="false">Фильтры</button>
+        <button id="openCart" class="cart-btn" aria-haspopup="dialog">Корзина <span id="cartCount" class="badge">0</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="catalog" aria-labelledby="catalogTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h2 id="catalogTitle" style="margin:0">Каталог</h2>
+          <div class="small">Показываем <span id="shownCount">0</span> из <span id="totalCount">0</span></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <select id="categoryFilter" aria-label="Категория">
+            <option value="">Все категории</option>
+            <option value="пестицид">Пестициды</option>
+            <option value="удобрение">Удобрения</option>
+            <option value="защита">Средства защиты</option>
+          </select>
+
+          <select id="doseFilter" aria-label="Тип дозировки">
+            <option value="">Любая упаковка</option>
+            <option value="литр">Литр</option>
+            <option value="килограмм">Килограмм</option>
+            <option value="мешок">Мешок</option>
+          </select>
+
+          <select id="sortBy" aria-label="Сортировка">
+            <option value="relevance">По релевантности</option>
+            <option value="price-asc">По цене: дешёвые</option>
+            <option value="price-desc">По цене: дорогие</option>
+          </select>
+        </div>
+
+        <div class="grid" id="productGrid" aria-live="polite"></div>
+
+        <div style="margin-top:18px">
+          <div class="note">
+            <strong>Важное:</strong> Перед размещением заказа убедитесь в наличии необходимых разрешений и соблюдении техники безопасности. На каждую позицию доступны СДС (MSDS) и инструкции — их можно скачать на странице товара.
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-labelledby="cartTitle">
+        <h3 id="cartTitle">Корзина</h3>
+        <div class="cart-list" id="cartList" aria-live="polite"></div>
+
+        <div class="total"><div>Итого:</div><div id="cartTotal">0 ₽</div></div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="checkout" class="btn buy" style="flex:1">Оформить заявку</button>
+          <button id="clearCart" class="btn info" style="width:44%">Очистить</button>
+        </div>
+
+        <hr style="margin:12px 0"/>
+        <div class="small">
+          <strong>Контакты:</strong><br/>
+          sales@agrochem.example<br/>
+          +7 (495) 123-45-67
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      © <span id="year"></span> Агрохимия — все права защищены. Продажа опасных веществ возможна при наличии разрешений.
+    </footer>
+  </div>
+
+  <!-- modal -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h2 id="modalTitle" style="margin:0">Оформление заявки</h2>
+        <button id="closeModal" class="close" aria-label="Закрыть">✕</button>
+      </div>
+
+      <form id="orderForm" onsubmit="return false">
+        <div class="row">
+          <div>
+            <label for="org">Организация / ФИО</label>
+            <input id="org" required type="text" placeholder="Название организации или ФИО" />
+          </div>
+          <div>
+            <label for="phone">Телефон</label>
+            <input id="phone" required type="text" placeholder="+7..." />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="e-mail@пример.рф" />
+          </div>
+          <div>
+            <label for="docType">Тип покупателя</label>
+            <select id="docType">
+              <option value="business">Юридическое лицо / ИП</option>
+              <option value="individual">Физическое лицо</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="msg">Комментарий к заказу</label>
+          <textarea id="msg" rows="4" placeholder="Адрес поставки, желаемая дата, комментарии..."></textarea>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="submitOrder" class="btn buy">Отправить заявку</button>
+          <button id="downloadQuote" class="btn info" type="button">Скачать заявку (PDF)</button>
+        </div>
+
+        <div style="margin-top:10px" class="small">
+          После отправки заявки с вами свяжется менеджер. На стороне сервера обязательно реализуйте верификацию покупателя и проверку разрешений.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // === sample product data
+    const PRODUCTS = [
+      {
+        id: 'p1',
+        title: 'Инсектицид А-100',
+        category: 'пестицид',
+        dose: 'литр',
+        active: 'имидaклоприд',
+        price: 1250,
+        img: 'https://via.placeholder.com/600x400?text=Инсектицид+A-100'
+      },
+      {
+        id: 'p2',
+        title: 'Гербицид ProWeed',
+        category: 'пестицид',
+        dose: 'литр',
+        active: 'глифосат',
+        price: 980,
+        img: 'https://via.placeholder.com/600x400?text=Гербицид+ProWeed'
+      },
+      {
+        id: 'p3',
+        title: 'Минеральное удобрение NPK 20-20-20',
+        category: 'удобрение',
+        dose: 'мешок',
+        active: 'NPK',
+        price: 3200,
+        img: 'https://via.placeholder.com/600x400?text=NPK+20-20-20'
+      },
+      {
+        id: 'p4',
+        title: 'Протравитель семян SeedSafe',
+        category: 'защита',
+        dose: 'килограмм',
+        active: 'тиаметоксам',
+        price: 450,
+        img: 'https://via.placeholder.com/600x400?text=SeedSafe'
+      },
+      {
+        id: 'p5',
+        title: 'Фунгицид ShieldX',
+        category: 'пестицид',
+        dose: 'литр',
+        active: 'манкоцеб',
+        price: 1380,
+        img: 'https://via.placeholder.com/600x400?text=ShieldX'
+      }
+    ];
+
+    // Accessibility helpers
+    const modal = document.getElementById('modal');
+
+    // State
+    let state = {
+      products: PRODUCTS.slice(),
+      cart: JSON.parse(localStorage.getItem('cart_agro') || '[]'),
+      filters: { q:'', category:'', dose:'', sort:'relevance' }
+    };
+
+    const productGrid = document.getElementById('productGrid');
+    const cartList = document.getElementById('cartList');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.getElementById('cartCount');
+    const shownCount = document.getElementById('shownCount');
+    const totalCount = document.getElementById('totalCount');
+    const year = document.getElementById('year');
+
+    year.textContent = new Date().getFullYear();
+
+    // Render functions
+    function renderProducts(){
+      const { q, category, dose, sort } = state.filters;
+      let items = state.products.filter(p => {
+        const matchesQ = !q || (p.title + ' ' + p.active).toLowerCase().includes(q.toLowerCase());
+        const matchesCat = !category || p.category === category;
+        const matchesDose = !dose || p.dose === dose;
+        return matchesQ && matchesCat && matchesDose;
+      });
+
+      if(sort === 'price-asc') items.sort((a,b) => a.price - b.price);
+      if(sort === 'price-desc') items.sort((a,b) => b.price - a.price);
+
+      productGrid.innerHTML = '';
+      items.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="img" style="background-image:url('${p.img}')" role="img" aria-label="${escapeHtml(p.title)}"></div>
+          <div class="title">${escapeHtml(p.title)}</div>
+          <div class="meta">Действующее: ${escapeHtml(p.active)} • ${escapeHtml(p.dose)}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="price">${p.price.toLocaleString('ru-RU')} ₽</div>
+            <div class="small">${p.category}</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn buy" data-id="${p.id}">В корзину</button>
+            <button class="btn info" data-info="${p.id}">Подробнее</button>
+          </div>
+        `;
+        productGrid.appendChild(card);
+      });
+
+      shownCount.textContent = items.length;
+      totalCount.textContent = state.products.length;
+    }
+
+    function renderCart(){
+      cartList.innerHTML = '';
+      let total = 0;
+      state.cart.forEach(it => {
+        const prod = PRODUCTS.find(p => p.id === it.id);
+        if(!prod) return;
+        total += prod.price * it.qty;
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <div style="flex:1">
+            <div style="font-weight:600">${escapeHtml(prod.title)}</div>
+            <div class="small">${prod.dose} • ${prod.active}</div>
+            <div class="small">Цена: ${prod.price.toLocaleString('ru-RU')} ₽</div>
+          </div>
+          <div style="text-align:right">
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+              <div>
+                <button data-dec="${it.id}" class="close" title="Уменьшить">−</button>
+                <span style="padding:0 8px">${it.qty}</span>
+                <button data-inc="${it.id}" class="close" title="Увеличить">+</button>
+              </div>
+              <div class="small">${(prod.price * it.qty).toLocaleString('ru-RU')} ₽</div>
+              <button data-remove="${it.id}" class="close" title="Удалить">Удалить</button>
+            </div>
+          </div>
+        `;
+        cartList.appendChild(row);
+      });
+      cartTotal.textContent = total.toLocaleString('ru-RU') + ' ₽';
+      cartCount.textContent = state.cart.reduce((s,i)=>s+i.qty,0);
+      localStorage.setItem('cart_agro', JSON.stringify(state.cart));
+    }
+
+    // utilities
+    function escapeHtml(str){ return (str+'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) }
+
+    // events
+    document.getElementById('q').addEventListener('input', e => {
+      state.filters.q = e.target.value;
+      renderProducts();
+    });
+    document.getElementById('categoryFilter').addEventListener('change', e => {
+      state.filters.category = e.target.value;
+      renderProducts();
+    });
+    document.getElementById('doseFilter').addEventListener('change', e => {
+      state.filters.dose = e.target.value;
+      renderProducts();
+    });
+    document.getElementById('sortBy').addEventListener('change', e => {
+      state.filters.sort = e.target.value;
+      renderProducts();
+    });
+
+    productGrid.addEventListener('click', e => {
+      const buy = e.target.closest('[data-id]');
+      const info = e.target.closest('[data-info]');
+      if(buy){
+        const id = buy.getAttribute('data-id');
+        addToCart(id,1);
+      } else if(info){
+        const id = info.getAttribute('data-info');
+        openInfo(id);
+      }
+    });
+
+    cartList.addEventListener('click', e => {
+      const inc = e.target.closest('[data-inc]');
+      const dec = e.target.closest('[data-dec]');
+      const rem = e.target.closest('[data-remove]');
+      if(inc){
+        const id = inc.getAttribute('data-inc'); changeQty(id,1);
+      } else if(dec){
+        const id = dec.getAttribute('data-dec'); changeQty(id,-1);
+      } else if(rem){
+        const id = rem.getAttribute('data-remove'); removeFromCart(id);
+      }
+    });
+
+    document.getElementById('clearCart').addEventListener('click', () => {
+      if(confirm('Очистить корзину?')) { state.cart = []; renderCart(); }
+    });
+
+    document.getElementById('openCart').addEventListener('click', () => {
+      openModal();
+    });
+
+    document.getElementById('checkout').addEventListener('click', () => {
+      if(state.cart.length === 0){ alert('Корзина пуста'); return; }
+      openModal();
+    });
+
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+
+    document.getElementById('submitOrder').addEventListener('click', submitOrder);
+    document.getElementById('downloadQuote').addEventListener('click', downloadQuote);
+
+    // cart helpers
+    function addToCart(id, qty=1){
+      const idx = state.cart.findIndex(i=>i.id===id);
+      if(idx >= 0) state.cart[idx].qty += qty;
+      else state.cart.push({ id, qty });
+      renderCart();
+    }
+    function changeQty(id, delta){
+      const idx = state.cart.findIndex(i=>i.id===id);
+      if(idx < 0) return;
+      state.cart[idx].qty += delta;
+      if(state.cart[idx].qty <= 0) state.cart.splice(idx,1);
+      renderCart();
+    }
+    function removeFromCart(id){
+      state.cart = state.cart.filter(i => i.id !== id);
+      renderCart();
+    }
+
+    // product info (simple)
+    function openInfo(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      if(!p) return;
+      // quick info modal: reuse modal
+      const body = document.querySelector('.modal .modal-body');
+      // build simple page inside modal
+      modal.querySelector('.modal').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0">${escapeHtml(p.title)}</h2>
+          <button id="closeModal2" class="close" aria-label="Закрыть">✕</button>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:240px">
+            <div style="width:100%;height:220px;border-radius:10px;background-image:url('${p.img}');background-size:cover;background-position:center"></div>
+          </div>
+          <div style="flex:1;min-width:240px">
+            <div style="margin-bottom:8px"><strong>Действующее вещество:</strong> ${escapeHtml(p.active)}</div>
+            <div style="margin-bottom:8px"><strong>Упаковка:</strong> ${escapeHtml(p.dose)}</div>
+            <div style="margin-bottom:8px"><strong>Категория:</strong> ${escapeHtml(p.category)}</div>
+            <div style="margin-bottom:12px;font-size:18px;color:var(--accent);font-weight:700">${p.price.toLocaleString('ru-RU')} ₽</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="modalAdd" class="btn buy">Добавить в корзину</button>
+              <a href="#" id="msdsLink" class="btn info" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Скачать СДС</a>
+            </div>
+            <div style="margin-top:12px" class="small">
+              <strong>Примечание по безопасности:</strong> продукт требует соблюдения инструкции по применению и средств индивидуальной защиты. Для коммерческой продажи требуется подтверждение полномочий покупателя.
+            </div>
+          </div>
+        </div>
+      `;
+      // handlers
+      document.getElementById('modalAdd').addEventListener('click', () => { addToCart(p.id,1); closeModal(); });
+      document.getElementById('msdsLink').addEventListener('click', (e)=>{
+        e.preventDefault();
+        // For demo: create a simple text file download. In real life link to authoritative PDF.
+        const msds = `СДС — ${p.title}\nДействующее вещество: ${p.active}\nИнструкция по безопасности: ...`;
+        const blob = new Blob([msds], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = p.title.replace(/\s+/g,'_') + '_MSDS.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      });
+      document.getElementById('closeModal2').addEventListener('click', closeModal);
+      openModal();
+    }
+
+    function openModal(){
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      // reset modal content if order form needed
+      const base = document.querySelector('.modal .modal');
+      // If modal contains the order form? If not present, recreate base form
+      if(!base || !document.getElementById('orderForm')){
+        // reload original modal HTML by reloading page fragment (simpler: just show order form)
+        modal.querySelector('.modal').innerHTML = document.querySelector('#modalDefaultTemplate')?.innerHTML || `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h2 id="modalTitle" style="margin:0">Оформление заявки</h2>
+            <button id="closeModal" class="close" aria-label="Закрыть">✕</button>
+          </div>
+          <form id="orderForm" onsubmit="return false">
+            <div class="row">
+              <div>
+                <label for="org">Организация / ФИО</label>
+                <input id="org" required type="text" placeholder="Название организации или ФИО" />
+              </div>
+              <div>
+                <label for="phone">Телефон</label>
+                <input id="phone" required type="text" placeholder="+7..." />
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" type="email" placeholder="e-mail@пример.рф" />
+              </div>
+              <div>
+                <label for="docType">Тип покупателя</label>
+                <select id="docType">
+                  <option value="business">Юридическое лицо / ИП</option>
+                  <option value="individual">Физическое лицо</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <label for="msg">Комментарий к заказу</label>
+              <textarea id="msg" rows="4" placeholder="Адрес поставки, желаемая дата, комментарии..."></textarea>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="submitOrder" class="btn buy">Отправить заявку</button>
+              <button id="downloadQuote" class="btn info" type="button">Скачать заявку (PDF)</button>
+            </div>
+            <div style="margin-top:10px" class="small">
+              После отправки заявки с вами свяжется менеджер.
+            </div>
+          </form>
+        `;
+        // reattach handlers
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('submitOrder').addEventListener('click', submitOrder);
+        document.getElementById('downloadQuote').addEventListener('click', downloadQuote);
+      }
+      // focus trap simple:
+      const first = modal.querySelector('input,button,select,textarea');
+      if(first) first.focus();
+    }
+
+    function closeModal(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+      // restore default modal HTML template for reuse (store)
+      // (do nothing else)
+    }
+
+    function submitOrder(){
+      const org = document.getElementById('org')?.value || '';
+      const phone = document.getElementById('phone')?.value || '';
+      const email = document.getElementById('email')?.value || '';
+      const msg = document.getElementById('msg')?.value || '';
+      const docType = document.getElementById('docType')?.value || '';
+      if(!org || !phone){ alert('Заполните обязательные поля: организация и телефон.'); return; }
+      // Here: in real project, perform server-side submission with verification.
+      const payload = {
+        org, phone, email, msg, docType,
+        items: state.cart.map(i => {
+          const p = PRODUCTS.find(x=>x.id===i.id);
+          return { id:i.id, title: p?.title||i.id, qty:i.qty, price:p?.price||0 };
+        }),
+        total: state.cart.reduce((s,i)=>s + (PRODUCTS.find(p=>p.id===i.id)?.price||0)*i.qty,0),
+        createdAt: new Date().toISOString()
+      };
+      console.log('ORDER PAYLOAD', payload);
+      alert('Заявка отправлена. Наш менеджер свяжется с вами.');
+      // clear cart after order for demo
+      state.cart = [];
+      renderCart();
+      closeModal();
+    }
+
+    function downloadQuote(){
+      // Create a simple CSV or text quote — in real project generate PDF on server.
+      const lines = [];
+      lines.push('Заявка на поставку — Агрохимия');
+      lines.push('Дата: ' + new Date().toLocaleString('ru-RU'));
+      lines.push('');
+      state.cart.forEach(it => {
+        const p = PRODUCTS.find(x=>x.id===it.id);
+        if(!p) return;
+        lines.push(`${p.title}; ${it.qty}; ${p.price} ₽; ${ (p.price*it.qty) } ₽`);
+      });
+      lines.push('');
+      lines.push('Итого: ' + state.cart.reduce((s,i)=>s + (PRODUCTS.find(p=>p.id===i.id)?.price||0)*i.qty,0) + ' ₽');
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'zayavka_agro.txt';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // initialize
+    function init(){
+      // keep a copy of the template modal content for reuse
+      const initialModalHTML = modal.querySelector('.modal').innerHTML;
+      const template = document.createElement('template');
+      template.id = 'modalDefaultTemplate';
+      template.innerHTML = initialModalHTML;
+      document.body.appendChild(template);
+
+      renderProducts();
+      renderCart();
+    }
+
+    init();
+
+  </script>
+</body>
+</html>
